@@ -68,7 +68,7 @@ It then exposes the request to Hyperion-enabled nodes for processing.
 ### 3. `onETHPriceReceived(...)` — Callback Upon Resolution
 
 ```solidity
-function onETHPriceReceived(bytes32 taskId, bytes calldata value, bool error) external;
+function onETHPriceReceived(bytes memory data, bytes memory err) external;
 ```
 
 - This function is automatically called by the Oracle module when a consensus of Hyperion nodes return the data.
