@@ -83,8 +83,8 @@ Because Helios offloads the task to decentralized modules, the smart contract mu
 
 | Fee Component   | Purpose                                                      |
 |-----------------|--------------------------------------------------------------|
-| `bridgeFee`     | To pay Hyperion nodes for calling external chain             |
-| `maxCallbackGas`| To ensure the callback function can be executed on Helios    |
+| `hyperion fee`     | To pay Hyperion nodes for calling external chain             |
+| `evm execution fee`| To ensure the callback function can be executed on Helios    |
 
 If not enough is paid, the request will fail, and Hyperions will not process it.
 
