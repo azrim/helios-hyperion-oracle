@@ -20,8 +20,24 @@ It functions similarly to Chainlink, but is natively integrated in the Helios st
 
 This contract demonstrates how to:
 1. Request a piece of external data (e.g. ETH price from Uniswap on Ethereum).
-2. Pay the required fees upfront (bridgeFee + gas reserve).
+2. Pay the required fees upfront (Hyperion oracle fee + gas evm reserve).
 3. Specify a callback function that will be called once the data is received and validated by the Hyperion network.
+
+---
+
+## Fee Mechanism for Cross-Chain Requests
+
+When you call `fetchETHPrice()` (or any external data request), your transaction sends a `msg.value` that is used to fund:
+
+- Hyperion fee (50%): pays the nodes fetching data from the external chain (e.g., Ethereum).
+- Callback execution fee (50%): pays for the EVM gas to execute the callback on Helios when data is ready.
+
+Example:
+- You want to allow up to 300,000 gas for the callback.
+- At 10 gwei gas price, the callback may cost up to `0.003 HELIOS`.
+- You send `0.006 HELIOS` in total — the system splits and reserves both sides.
+
+If not enough gas is used, the remaining value is refunded after execution or expiration.
 
 ---
 
@@ -36,7 +52,7 @@ function fetchETHPrice() external payable;
 - Encodes an ABI call to a known contract on another chain (e.g. a price feed).
 - Sends the request to a precompile address (0x999...).
 - Pays `msg.value` to cover:
-  - `bridgeFee`: paid to Hyperion nodes to execute the request off-chain.
+  - `hyperionFee`: paid to Hyperion nodes to execute the request off-chain.
   - `maxCallbackGas`: reserved to execute the callback once the result is available.
 
 ### 2. `requestData(...)` — Precompile Logic

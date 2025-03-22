@@ -1,17 +1,21 @@
 const hre = require("hardhat");
 const { ethers } = hre;
 
-const CONTRACT_ADDRESS = "0x503A9C7C0c2D0b55AC4E79d990abb9be6C7e438E";
-const TOTAL_CALL_VALUE = ethers.parseEther("0.02"); // e.g. 0.01 for bridgeFee + 0.01 for maxGas
+const CONTRACT_ADDRESS = "0x28641a6d2470619e3eb6bb642538b3Cd078b5B91";
+const TOTAL_CALL_VALUE = ethers.parseEther("0.1"); // e.g. 5 for bridgeFee + 5 for maxGas
 
 async function main() {
   const [caller] = await ethers.getSigners();
+  const balance = await ethers.provider.getBalance(caller.address);
+  console.log(`Account balance: ${ethers.formatEther(balance)} HLS`);
   console.log(`Calling fetchETHPrice() from: ${caller.address}`);
 
   const contract = await ethers.getContractAt("HyperionDataConsumer", CONTRACT_ADDRESS);
 
   const tx = await contract.fetchETHPrice({
-    value: TOTAL_CALL_VALUE
+    value: TOTAL_CALL_VALUE, // -> we are willing to pay hyperion / evm execution up to TOTAL_CALL_VALUE HLS to fetch the data on ethereum chain
+                            // rest not consumed is refunded: it is splitted 50% for hyperion external calls / 50% for evm executions
+    gasLimit: 500000, // this is only gas limit for current execution, asking the external data to be requested
   });
 
   console.log("Transaction sent. Waiting for confirmation...");
@@ -21,11 +25,23 @@ async function main() {
     log.topics[0] === contract.interface.getEvent("TaskCreated").topicHash
   );
 
-  if (event) {
-    const taskId = ethers.decodeLog(["bytes32"], event.data)[0];
-    console.log(`✅ Task created with ID: ${taskId}`);
+ if (event) {
+    // Create an interface for decoding
+    const iface = new ethers.Interface([
+      "event TaskCreated(uint256 indexed taskId)"
+    ]);
+    
+    // Parse the log using the interface
+    const parsedLog = iface.parseLog({
+      topics: event.topics,
+      data: event.data
+    });
+    
+    // Access the decoded taskId
+    const taskId = parsedLog.args.taskId;
+    console.log(`Task created with ID: ${taskId}`);
   } else {
-    console.log("⚠️ TaskCreated event not found. Check contract or network status.");
+    console.log("TaskCreated event not found. Check contract or network status.");
   }
 }
 
