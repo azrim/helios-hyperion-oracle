@@ -131,7 +131,7 @@ You can deploy the contract to the Helios local network or testnet.
 #### Deploy to localhost (Helios node running on localhost:8545)
 
 ```bash
-npx hardhat run scripts/deploy.js --network helios
+npx hardhat run scripts/deploy.js --network helios-testnet
 ```
 
 #### Deploy to Helios public testnet
@@ -141,5 +141,11 @@ npx hardhat run scripts/deploy.js --network helios-testnet
 ```
 
 Make sure your account has enough HELIOS for gas and fees.
+
+#### Execution of the function call to retrieve data from the Ethereum chain (chain id 0x1)
+
+```bash
+npx hardhat run scripts/callFetchETHPrice.js --network helios-testnet
+```
 
 ---
