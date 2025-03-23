@@ -6,6 +6,7 @@ interface IHyperionPrecompile {
         uint64 chainId,
         address source,
         bytes calldata abiCall,
+        address callbackAddress,
         string memory callbackSelector,
         uint256 maxCallbackGas,
         uint256 gasLimit
@@ -14,6 +15,7 @@ interface IHyperionPrecompile {
 
 contract HyperionDataConsumer {
     address public constant hyperion = 0x0000000000000000000000000000000000000900;
+    address public constant owner = 0x17267eB1FEC301848d4B5140eDDCFC48945427Ab;
 
     event TaskCreated(uint256 indexed taskId);
 
@@ -41,6 +43,7 @@ contract HyperionDataConsumer {
             uint64(1),              // chainId
             source,                 // source address
             abiCall,                // encoded function call
+            address(this),
             "onETHPriceReceived",   // callback function 
             10 gwei,                // max gas price for callback
             300000                  // max gas limit for call
@@ -55,7 +58,7 @@ contract HyperionDataConsumer {
 
     // hyperion oracle will call us here giving us the price return from the ETH contract getPrice() call
     function onETHPriceReceived(bytes memory data, bytes memory err) external {
-        require(msg.sender == hyperion, "Only Hyperion can call");
+        require(msg.sender == owner, "Only Owner can call");
         if (err.length == 0) {
             // cast as the received info from the eth contract is in uint256
             uint256 price = abi.decode(data, (uint256));
