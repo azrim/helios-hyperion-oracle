@@ -6,7 +6,6 @@ interface IHyperionPrecompile {
         uint64 chainId,
         address source,
         bytes calldata abiCall,
-        address callbackAddress,
         string memory callbackSelector,
         uint256 maxCallbackGas,
         uint256 gasLimit
@@ -43,7 +42,6 @@ contract HyperionDataConsumer {
             uint64(1),              // chainId
             source,                 // source address
             abiCall,                // encoded function call
-            address(this),
             "onETHPriceReceived",   // callback function 
             10 gwei,                // max gas price for callback
             300000                  // max gas limit for call
