@@ -1,7 +1,7 @@
 const hre = require("hardhat");
 const { ethers } = hre;
 
-const CONTRACT_ADDRESS = "0x28641a6d2470619e3eb6bb642538b3Cd078b5B91";
+const CONTRACT_ADDRESS = "0xe2a522bF5987B884Eb8Ec2D144E7Eca8ABda6B10";
 const TOTAL_CALL_VALUE = ethers.parseEther("0.1"); // e.g. 5 for bridgeFee + 5 for maxGas
 
 async function main() {

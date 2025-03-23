@@ -6,7 +6,7 @@ interface IHyperionPrecompile {
         uint64 chainId,
         address source,
         bytes calldata abiCall,
-        bytes4 callbackSelector,
+        string memory callbackSelector,
         uint256 maxCallbackGas,
         uint256 gasLimit
     ) external payable returns (uint256);
@@ -17,11 +17,11 @@ contract HyperionDataConsumer {
 
     event TaskCreated(uint256 indexed taskId);
 
+    uint256 public ethPrice; // New state variable to store the ETH price
+
     function fetchETHPrice() external payable {
         address source = address(0x1234567890123456789012345678901234567890); // example ETH contract to call
         bytes memory abiCall = abi.encodeWithSignature("getPrice()"); // example ETH function to call on the source contract
-        bytes4 callbackSelector = this.onETHPriceReceived.selector;
-
         /*
         ** you can also do to avoid linking IHyperionPrecompile on all your contracts
                (bool success, bytes memory result) = hyperion.call{value: msg.value}(
@@ -30,9 +30,9 @@ contract HyperionDataConsumer {
                 uint64(1), // eth chain id
                 source, 
                 abiCall, 
-                callbackSelector, 
-                uint256(300000), 
-                uint256(1000000000000000000)
+                "onETHPriceReceived", 
+                uint256(10 gwei), 
+                uint256(300000)
             )
         );
         */
@@ -41,7 +41,7 @@ contract HyperionDataConsumer {
             uint64(1),              // chainId
             source,                 // source address
             abiCall,                // encoded function call
-            callbackSelector,       // callback function selector
+            "onETHPriceReceived",   // callback function 
             10 gwei,                // max gas price for callback
             300000                  // max gas limit for call
         );
@@ -59,7 +59,14 @@ contract HyperionDataConsumer {
         if (err.length == 0) {
             // cast as the received info from the eth contract is in uint256
             uint256 price = abi.decode(data, (uint256));
-            // do something with price
+            ethPrice = price; // Store the received price in the state variable
+           
+            // do something with price like more logic if necessary
         }
+    }
+
+    // get last stored ETH price
+    function getCurrentETHPrice() external view returns (uint256) {
+        return ethPrice; // Return the current ETH price
     }
 }
