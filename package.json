@@ -1,0 +1,16 @@
+{
+  "name": "helios-hyperion-oracle",
+  "version": "1.0.0",
+  "scripts": {
+    "test": "npx hardhat test"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-ethers": "^3.0.0",
+    "@nomicfoundation/hardhat-toolbox": "^3.0.0",
+    "hardhat": "^2.22.0",
+    "ethers": "^6.3.0"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.7"
+  }
+}
