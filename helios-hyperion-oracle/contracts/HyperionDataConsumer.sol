@@ -12,13 +12,19 @@ interface IHyperionPrecompile {
     ) external payable returns (uint256);
 }
 
+error NotHyperion();
+
 contract HyperionDataConsumer {
     address public constant hyperion = 0x0000000000000000000000000000000000000900;
-    address public constant owner = 0x17267eB1FEC301848d4B5140eDDCFC48945427Ab;
+    address public owner;
 
     event TaskCreated(uint256 indexed taskId);
 
     uint256 public ethPrice; // New state variable to store the ETH price
+
+    constructor() {
+        owner = msg.sender;
+    }
 
     function fetchETHPrice() external payable {
         address source = address(0x1234567890123456789012345678901234567890); // example ETH contract to call
@@ -56,7 +62,7 @@ contract HyperionDataConsumer {
 
     // hyperion oracle will call us here giving us the price return from the ETH contract getPrice() call
     function onETHPriceReceived(bytes memory data, bytes memory err) external {
-        require(msg.sender == owner, "Only Owner can call");
+        if (msg.sender != hyperion) revert NotHyperion();
         if (err.length == 0) {
             // cast as the received info from the eth contract is in uint256
             uint256 price = abi.decode(data, (uint256));

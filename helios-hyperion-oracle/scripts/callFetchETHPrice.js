@@ -1,7 +1,13 @@
 const hre = require("hardhat");
 const { ethers } = hre;
+const fs = require("fs");
 
-const CONTRACT_ADDRESS = "0xe2a522bF5987B884Eb8Ec2D144E7Eca8ABda6B10";
+const { contractAddress } = JSON.parse(fs.readFileSync("deployed-address.json", "utf8"));
+if (!contractAddress) {
+  console.error("Contract address not found. Please deploy first.");
+  process.exit(1);
+}
+
 const TOTAL_CALL_VALUE = ethers.parseEther("0.1"); // e.g. 5 for bridgeFee + 5 for maxGas
 
 async function main() {
@@ -10,7 +16,7 @@ async function main() {
   console.log(`Account balance: ${ethers.formatEther(balance)} HLS`);
   console.log(`Calling fetchETHPrice() from: ${caller.address}`);
 
-  const contract = await ethers.getContractAt("HyperionDataConsumer", CONTRACT_ADDRESS);
+  const contract = await ethers.getContractAt("HyperionDataConsumer", contractAddress);
 
   const tx = await contract.fetchETHPrice({
     value: TOTAL_CALL_VALUE, // -> we are willing to pay hyperion / evm execution up to TOTAL_CALL_VALUE HLS to fetch the data on ethereum chain

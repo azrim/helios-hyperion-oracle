@@ -1,5 +1,7 @@
 # Cross-Chain Data Request Smart Contract for Helios with Hyperion
 
+> **Note:** This project has been updated to fix a critical bug in the callback mechanism and improve the developer experience. For a complete guide on how to run this example, please see the [**TUTORIAL.md**](./TUTORIAL.md) file.
+
 ## Overview
 
 `HyperionDataConsumer.sol` is a reference smart contract built for the Helios blockchain, showcasing how to interact with the Hyperion precompile system. It allows smart contracts to request external data from other blockchains (like Ethereum) in a decentralized, asynchronous, and secure way.
